@@ -73,7 +73,7 @@ void initScreen() {
       //   draw_splash_helium(HELIUM_XCENTER, (240-100)/2, i);
       // #endif
       #ifdef WITH_SPLASH_TTN  
-        draw_splash_ttn(TTN_XCENTER, (240-85)/2, i);
+        draw_splash_ttn(TTN_XCENTER, (240-85)/3, i);
       #endif
   }
   delay(1500);

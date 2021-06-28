@@ -41,7 +41,7 @@ enum e_display_state {
 #ifdef WITH_SPLASH_HELIUM
   #ifdef WITH_SPLASH_TTN
     #define HELIUM_XCENTER (160-100)/2
-    #define TTN_XCENTER 160+(160-100)/2
+    #define TTN_XCENTER 110
   #else
     #define HELIUM_XCENTER (320-100)/2
   #endif
