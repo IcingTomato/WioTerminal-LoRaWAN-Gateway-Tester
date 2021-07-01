@@ -98,7 +98,7 @@ void tst_setPower(int8_t pwr) {
     #error "Not Yet implemented"
   #endif
   state.cPwr = pwr;
-  E5_Module_Data.Pwr = pwr;
+//  E5_Module_Data.Pwr = pwr;
 //  E5_Module_AT_Cmd("POWER");
 }
 
@@ -113,7 +113,7 @@ void tst_setSf(uint8_t sf) {
     #error "Not Yet implemented"
   #endif
   state.cSf = sf;
-  E5_Module_Data.Sf = (e_Lora_Regional)sf;
+//  E5_Module_Data.Sf = (e_Lora_Regional)sf;
 //  E5_Module_AT_Cmd("DR");  
 }
 
@@ -121,6 +121,6 @@ void tst_setRetry(uint8_t retry) {
   if ( retry > TXCONF_ATTEMPTS ) retry = TXCONF_ATTEMPTS;
   if ( retry < 0 ) retry = 0;
   state.cRetry = retry;
-  E5_Module_Data.Retry = retry;
+//  E5_Module_Data.Retry = retry;
 //  E5_Module_AT_Cmd("RETRY"); 
 }

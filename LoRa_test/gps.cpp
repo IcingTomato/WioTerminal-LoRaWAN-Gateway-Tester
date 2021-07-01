@@ -1,14 +1,15 @@
 #include "config.h"
 #include "gps.h"
 #include "testeur.h"
-#include<SoftwareSerial.h>
+#include <SoftwareSerial.h>
 #include <TinyGPS++.h>
 
 String N_date, N_time,N_satellites;
 String P_date, P_time,P_lat,P_lng,P_satellites,P_meters;
 String N_lat = "0:0:0.00";
 String N_lng = "0:0:0.00";
-String N_meters = "0.00";;
+String N_meters = "0.00";
+static double Lat,Lng,Meters,Satellites;
 SoftwareSerial softSerial1(3,2);
 
 TinyGPSPlus gps;
@@ -46,14 +47,18 @@ void UpdateGpsInfo(){
     double lng2 = (lng1 - int(lng1))*60;
     //String 
     N_lng = String(int(lng0))+':' + String(int(lng1))+':'+String(lng2) + ' ' + String(ExtLng.value());
+    Lat = lat0*1000000;
+    Lng = lng0*1000000;
   }
   if(gps.satellites.isUpdated())
   {
     N_satellites = String(gps.satellites.value());
+    Satellites = gps.satellites.value();
   }
   if(gps.altitude.isUpdated())
   {
     N_meters = String(gps.altitude.meters());
+    Meters = gps.altitude.meters()*100;
   }
   if (gps.date.isUpdated()) 
   {
@@ -69,4 +74,7 @@ void UpdateGpsInfo(){
     int s = gps.time.second(); 
     N_time = ('0'+String(h)).substring(('0'+String(h)).length()-2)+':'+('0'+String(m)).substring(('0'+String(m)).length()-2)+':'+('0'+String(s)).substring(('0'+String(s)).length()-2);    
   }
+}
+int UpdateGpsData(char* destination){
+  sprintf(destination, "\"%08X%08X%08X%02X\"\r\n", (int)(Lat*1000000), (int)(Lng*1000000),(int)(Meters*100),(int)Satellites); 
 }

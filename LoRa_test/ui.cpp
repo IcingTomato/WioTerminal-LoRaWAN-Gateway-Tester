@@ -73,7 +73,7 @@ void initScreen() {
       //   draw_splash_helium(HELIUM_XCENTER, (240-100)/2, i);
       // #endif
       #ifdef WITH_SPLASH_TTN  
-        draw_splash_ttn(TTN_XCENTER, (240-85)/3, i);
+        draw_splash_ttn(TTN_XCENTER, (240-85)/2, i);
       #endif
   }
   delay(1500);
@@ -151,14 +151,14 @@ void Button_Detection(void){
     switch ( ui.selected_menu ) {
       case SELECTED_POWER:
          tst_setPower(state.cPwr+2);
-         E5_Module_Data.Pwr = state.cPwr+2;
+         E5_Module_Data.Pwr = state.cPwr;
          E5_Module_AT_Cmd("POWER");
          forceRefresh = true;
          configHasChanged = true;
          break;
       case SELECTED_SF:
          tst_setSf(state.cSf+1);
-         E5_Module_Data.Sf = (e_Lora_Regional)(state.cSf+1);
+         E5_Module_Data.Sf = (e_Lora_Regional)(state.cSf);
          E5_Module_AT_Cmd("DR");  
          configHasChanged = true;
          forceRefresh = true;
@@ -189,11 +189,15 @@ void Button_Detection(void){
     switch ( ui.selected_menu ) {
       case SELECTED_POWER:
          tst_setPower(state.cPwr-2);
+         E5_Module_Data.Pwr = state.cPwr;
+         E5_Module_AT_Cmd("POWER");
          configHasChanged = true;
          forceRefresh = true;
          break;
       case SELECTED_SF:
          tst_setSf(state.cSf-1);
+         E5_Module_Data.Sf = (e_Lora_Regional)(state.cSf);
+         E5_Module_AT_Cmd("DR"); 
          configHasChanged = true;
          forceRefresh = true;
          break;
@@ -639,7 +643,9 @@ void refreshSnrHist() {
 
 void refreshDeviceInfo(void)
 {
-//  if ( ui.previous_display != ui.selected_display ) 
+  if ( ui.previous_display == ui.selected_display ){
+    return; 
+  }
   {
     tft.fillRect(HIST_X_OFFSET,HIST_Y_OFFSET-18,HIST_X_TXTSIZE,18,TFT_BLACK);
     tft.fillRect(HIST_X_OFFSET,HIST_Y_OFFSET,HIST_X_SIZE,HIST_Y_SIZE,TFT_BLACK);

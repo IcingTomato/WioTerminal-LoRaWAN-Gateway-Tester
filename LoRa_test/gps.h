@@ -9,5 +9,6 @@ extern String P_date, P_time,P_lat,P_lng,P_satellites,P_meters;
 void init_softSerial();
 void GetGpsInfoPolling();
 void UpdateGpsInfo();
+int UpdateGpsData(char* destination);
 
 #endif

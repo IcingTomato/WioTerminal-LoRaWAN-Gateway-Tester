@@ -2,7 +2,7 @@
 #include "ui.h"
 #include "testeur.h"
 #include "config.h"
-
+#include "gps.h"
 
 #include<SoftwareSerial.h>
 
@@ -108,7 +108,9 @@ int E5_Module_SendCmsgHexData(void)
         {
             E5_Module_Data.State = IN_TX;
             E5_Module_Data.SendNumber++;
-            strcpy(E5_Module_Data.SendData,"112233");
+            //strcpy(E5_Module_Data.SendData,"112233");
+            memset(E5_Module_Data.SendData, 0, sizeof(E5_Module_Data.SendData));
+            UpdateGpsData(E5_Module_Data.SendData);
             E5_Module_AT_Cmd("CMSGHEX");               
         }
     }
