@@ -731,23 +731,23 @@ void refreshGpsInfo(){
 
     xOffset = HIST_X_OFFSET+10;
     yOffset = HIST_Y_OFFSET+10;
-    tft.drawString("Date",xOffset,yOffset,GFXFF);
+    tft.drawString("Date: ",xOffset,yOffset,GFXFF);
     tft.drawString(N_date,xOffset+50,yOffset,GFXFF);
     yOffset += 18;
-    tft.drawString("Time",xOffset,yOffset,GFXFF);
+    tft.drawString("Time: ",xOffset,yOffset,GFXFF);
     tft.drawString(N_time,xOffset+50,yOffset,GFXFF);
     yOffset += 18;
-    tft.drawString("LAT",xOffset,yOffset,GFXFF);
+    tft.drawString("LAT: ",xOffset,yOffset,GFXFF);
     tft.drawString(N_lat,xOffset+50,yOffset,GFXFF);      
     yOffset += 18;
-    tft.drawString("LONG",xOffset,yOffset,GFXFF);
+    tft.drawString("LONG: ",xOffset,yOffset,GFXFF);
     tft.drawString(N_lng,xOffset+50,yOffset,GFXFF); 
     yOffset += 18;
-    tft.drawString("ALT",xOffset,yOffset,GFXFF);
+    tft.drawString("ALT: ",xOffset,yOffset,GFXFF);
     tft.drawString(N_meters,xOffset+50,yOffset,GFXFF); 
     yOffset += 18;
 //    tft.drawString("Satellites",xOffset,yOffset,GFXFF);
-    tft.drawString("Satellites",xOffset,yOffset,GFXFF);
+    tft.drawString("Satellites: ",xOffset,yOffset,GFXFF);
     tft.drawString(N_satellites,xOffset+120,yOffset,GFXFF);
                         
     tft.drawRoundRect(HIST_X_OFFSET,HIST_Y_OFFSET,HIST_X_SIZE,HIST_Y_SIZE,R_SIZE,TFT_WHITE);
@@ -768,52 +768,40 @@ void refreshGpsInfo(){
   yOffset = HIST_Y_OFFSET+10;
   if(N_date != P_date){
       tft.fillRect(xOffset,yOffset,150,18,TFT_BLACK);
-      tft.drawString(N_date,xOffset,yOffset,GFXFF);
+      tft.drawString(N_date,xOffset+15,yOffset,GFXFF);
       P_date = N_date;  
   }
   yOffset += 18;
-//  Serial.print("N_time ：");
-//  Serial.println(N_time);
-//  Serial.print("P_time ：");
-//  Serial.println(P_time);
+
   if(N_time != P_time){
-//      Serial.println("Update time");
-//      Serial.print("xOffset = ");
-//      Serial.println(xOffset);
-//      Serial.print("yOffset = ");
-//      Serial.println(yOffset);      
+
       tft.fillRect(xOffset,yOffset,150,18,TFT_BLACK);
-      tft.drawString(N_time,xOffset,yOffset,GFXFF);
+      tft.drawString(N_time,xOffset+15,yOffset,GFXFF);
       P_time = N_time; 
   }
-//  Serial.print("N_lat : ");
-//  Serial.println(N_lat);
-//  Serial.print("P_lat : ");
-//  Serial.println(P_lat);
   yOffset += 18;
   if(N_lat != P_lat){
-//      Serial.println("N_lat != P_lat\r\n");
       tft.fillRect(xOffset,yOffset,150,18,TFT_BLACK);
-      tft.drawString(N_lat,xOffset,yOffset,GFXFF); 
+      tft.drawString(N_lat,xOffset+15,yOffset,GFXFF); 
       P_lat = N_lat;
   }
   yOffset += 18;
   if(N_lng != P_lng){
       tft.fillRect(xOffset,yOffset,150,18,TFT_BLACK);
-      tft.drawString(N_lng,xOffset,yOffset,GFXFF); 
+      tft.drawString(N_lng,xOffset+15,yOffset,GFXFF); 
       P_lng = N_lng; 
   }
   yOffset += 18;
   if(N_meters != P_meters){
       tft.fillRect(xOffset,yOffset,150,18,TFT_BLACK);
-      tft.drawString(N_meters,xOffset,yOffset,GFXFF); 
+      tft.drawString(N_meters,xOffset+15,yOffset,GFXFF); 
       P_meters = N_meters; 
   }
   xOffset += 70;
   yOffset += 18;
   if(N_satellites != P_satellites){
       tft.fillRect(xOffset,yOffset,100,18,TFT_BLACK);
-      tft.drawString(N_satellites,xOffset,yOffset,GFXFF);
+      tft.drawString(N_satellites,xOffset+15,yOffset,GFXFF);
       P_satellites = N_satellites; 
   }
 /*//  if(E5_Module_Data.Moudlue_Is_Ok == true)
@@ -895,29 +883,3 @@ void refreshRetryHist() {
   
 }
 
-
-
-
-
-
-
-
-
-/**
- * Refresh the GPS state indicator
- */
-/*void refreshGps() {
-  int xOffset = X_OFFSET+4;
-  int yOffset = Y_OFFSET+2*Y_SIZE+5;
-  if ( gps.isReady ) {
-    if ( gps.hdop < 100 && gps.sats > 6 ) {
-       tft.fillRoundRect(xOffset,yOffset,10,10,5,TFT_GREEN);  
-    } else {
-       tft.fillRoundRect(xOffset,yOffset,10,10,5,TFT_ORANGE);  
-    }
-  } else {
-     tft.fillRoundRect(xOffset,yOffset,10,10,5,TFT_RED);
-  }
-
-  
-}*/
