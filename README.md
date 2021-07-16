@@ -40,7 +40,7 @@ requite library:
 
 Each LoRa device has a unique serial number, after you connect the LoRa device to the Wio terminal then there will display the deveui, appeui and appkey on the first page, you need to fill the LoRa ID and gateway ID in server.
 
-<div align=center><img width = 600 src="https://files.seeedstudio.com/wiki/LoRa_WioTerminal/LoRa_ID.png"/></div>
+<div align=center><img width = 600 src="https://files.seeedstudio.com/wiki/LoRa_WioTerminal/rola_tester_ID.png"/></div>
 
 There are Rssi and Snr data, and it will display the signal and Snr bar and packet loss after get the ACK respond.
 
