@@ -9,6 +9,7 @@ I was analysing the Rola tester market, the price between 150 - 400 pounds and s
 ## Feature
 
 - Selection for || Power(2-16) || SF(7-12) || set test numbers(10-990) || test times ||
+- network segment selection (EU868, US915, US915HYBRID, AU915, AS923, KR920, IN865)
 - LoRa device information such as DevEui, APPEui, Appkey and Firmware version 
 - record the last time test data
 - display RoLa device connection, network connection, uplink and downlink status
