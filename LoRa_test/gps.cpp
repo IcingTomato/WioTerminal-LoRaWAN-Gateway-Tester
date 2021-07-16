@@ -4,7 +4,7 @@
 #include <SoftwareSerial.h>
 #include <TinyGPS++.h>
 
-String N_date, N_time,N_satellites;
+String N_date, N_time,N_satellites= "0";
 String P_date, P_time,P_lat,P_lng,P_satellites,P_meters;
 String N_lat = "0:0:0.00";
 String N_lng = "0:0:0.00";
@@ -34,7 +34,7 @@ void GetGpsInfoPolling(){
 }
 
 void UpdateGpsInfo(){
-  if (gps.location.isUpdated()) 
+  if (gps.location.isUpdated() && gps.location.isValid()) 
   {
     double lat0 = gps.location.lat();
     double lat1 = (lat0 -int(lat0))*60;
@@ -50,24 +50,24 @@ void UpdateGpsInfo(){
     Lat = lat0*1000000;
     Lng = lng0*1000000;
   }
-  if(gps.satellites.isUpdated())
+  if(gps.satellites.isUpdated() && gps.satellites.isValid())
   {
     N_satellites = String(gps.satellites.value());
     Satellites = gps.satellites.value();
   }
-  if(gps.altitude.isUpdated())
+  if(gps.altitude.isUpdated() && gps.altitude.isValid())
   {
     N_meters = String(gps.altitude.meters());
     Meters = gps.altitude.meters()*100;
   }
-  if (gps.date.isUpdated()) 
+  if (gps.date.isUpdated() && gps.date.isValid()) 
   {
     int y = gps.date.year();
     int m = gps.date.month();
     int d = gps.date.day(); 
     N_date = String(y)+'/'+('0'+String(m)).substring(('0'+String(m)).length()-2)+'/'+('0'+String(d)).substring(('0'+String(d)).length()-2);    
   }
-  if (gps.time.isUpdated()) 
+  if (gps.time.isUpdated() && gps.time.isValid()) 
   {
     int h = gps.time.hour();
     int m = gps.time.minute();
@@ -76,5 +76,5 @@ void UpdateGpsInfo(){
   }
 }
 int UpdateGpsData(char* destination){
-  sprintf(destination, "\"%08X%08X%08X%02X\"\r\n", (int)(Lat*1000000), (int)(Lng*1000000),(int)(Meters*100),(int)Satellites); 
+  sprintf(destination, "\"%08X%08X%08X%02X\"\r\n", (int)(Lat), (int)(Lng),(int)(Meters),(int)Satellites); 
 }

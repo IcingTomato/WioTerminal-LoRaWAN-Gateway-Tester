@@ -29,6 +29,7 @@ typedef struct {
   uint8_t   version;
   int8_t    cPwr;     // Current Power
   uint8_t   cSf;      // Current SF
+  uint8_t   cRegion;  // Current Region
   uint8_t   cRetry;   // Current Number of retry
   uint16_t  cTotal;
   uint8_t   selected_display;
@@ -38,12 +39,13 @@ typedef struct {
 // Load configuration from flash
 // return tru if loaded false if default must be set
 bool readConfig() {
-  Serial.println("Read Data.....");
+//  Serial.println("Read Data.....");
   Config c ;
   EEPROM.get(START_ADDRESS,c);
   if ( c.magic == MAGIC && c.version == VERSION ) {
     state.cPwr = c.cPwr;
     state.cSf = c.cSf;
+    state.cRegion = c.cRegion;
     state.cRetry = c.cRetry;
     state.cTotal = c.cTotal;
     ui.selected_display = c.selected_display;
@@ -60,6 +62,7 @@ void storeConfig() {
   c.version = VERSION;
   c.cPwr = state.cPwr;
   c.cSf = state.cSf;
+  c.cRegion = state.cRegion;
   c.cRetry = state.cRetry;
   c.cTotal = state.cTotal;
   c.selected_display = ui.selected_display;
@@ -67,8 +70,8 @@ void storeConfig() {
   EEPROM.put(START_ADDRESS, c);
   if (!EEPROM.getCommitASAP())
   {
-    Serial.println("CommitASAP not set. Need commit()");
+//    Serial.println("CommitASAP not set. Need commit()");
     EEPROM.commit();
   } 
-  Serial.println("Save Data.....");
+//  Serial.println("Save Data.....");
 }

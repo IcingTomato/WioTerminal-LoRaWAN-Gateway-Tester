@@ -76,17 +76,18 @@ void initScreen() {
         draw_splash_ttn(TTN_XCENTER, (240-85)/2, i);
       #endif
   }
-  delay(1500);
+//  delay(1500);
 #endif
-
+Init_E5_Mode();
   tft.fillScreen(TFT_BLACK);
 
   if ( ! readConfig() ) 
   {
+//    Serial.println("initScreen Defaulr para");
     ui.selected_display = DISPLAY_DEVICE_INFO;//DISPLAY_RSSI_HIST;    
-    ui.selected_mode = MODE_MANUAL;
+    storeConfig();
   }
-
+  ui.selected_mode = MODE_MANUAL;
   ui.selected_menu = SELECTED_NONE;
   ui.displayed_state = UKN_STAT;
   ui.transmit_v = 255;
@@ -96,14 +97,26 @@ void initScreen() {
   ui.alertMode = false;
   
   // draw mask
-  refreshPower(); 
-  refreshSf();
+tst_setRegion(state.cRegion);
+//  refreshPower(); 
+//  refreshSf();
   //refreshRetry();
   refreshTotal();
-  refreshState();
-  refreshMode();
+//  refreshState();
+  refreshMode(false);
   refreshLastFrame();
-
+  switch ( ui.selected_display ) {
+    case DISPLAY_RSSI_HIST:
+      refreshRssiHist();
+      break;
+    case DISPLAY_SNR_HIST:
+      refreshSnrHist();
+      break;
+    case DISPLAY_DEVICE_INFO:
+//      refreshMode(false);
+      refreshDeviceInfo(false);
+      break;
+  }
   pinMode(WIO_KEY_A, INPUT_PULLUP);
   pinMode(WIO_KEY_B, INPUT_PULLUP);
   pinMode(WIO_KEY_C, INPUT_PULLUP);
@@ -126,7 +139,7 @@ void Clear_Data()
        (E5_Module_Data.rssi != 0) || (E5_Module_Data.snr != 0) || 
        (QueueEmpty(SqQueueRssi) != true) || (QueueEmpty(SqQueueRssi) != true))
     {
-        Serial.println("Clear Data");
+//        Serial.println("Clear Data");
         E5_Module_Data.SendNumber = 0;
         E5_Module_Data.RecvNumber = 0;
         E5_Module_Data.rssi = 0;
@@ -141,6 +154,7 @@ void Button_Detection(void){
   bool forceRefresh = false;
   bool configHasChanged = false;
   uint8_t prev_select = ui.selected_menu;
+  
   if (digitalRead(WIO_KEY_C) == LOW) {
     ui.selected_menu = ( prev_select == SELECTED_POWER )?SELECTED_NONE:SELECTED_POWER;
   } else if (digitalRead(WIO_KEY_B) == LOW) {
@@ -177,9 +191,21 @@ void Button_Detection(void){
          forceRefresh = true;
          break;
        case SELECTED_NONE:
-          ui.selected_mode = (ui.selected_mode+1)%MODE_MAX;
+          if(ui.selected_display == DISPLAY_DEVICE_INFO)
+          {
+              tst_setRegion(state.cRegion+1);
+              E5_Module_Data.Sf = (e_Lora_Regional)(state.cRegion);
+              E5_Module_AT_Cmd("DR");  
+              //Serial.print("Set Region ++\r\n");
+              refreshMode(false);
+              refreshDeviceInfo(true);
+          }
+          else
+          {  
+              ui.selected_mode = (ui.selected_mode+MODE_MAX+1)%MODE_MAX; 
+              refreshMode(true);
+          }             
           configHasChanged = true;
-          refreshMode();
           hasAction = true;
       default:
          break;   
@@ -215,10 +241,24 @@ void Button_Detection(void){
          forceRefresh = true;
          break;
       case SELECTED_NONE:
-            ui.selected_mode = (ui.selected_mode+MODE_MAX-1)%MODE_MAX;
-            configHasChanged = true;
-            refreshMode();
-            hasAction = true;
+          if(ui.selected_display == DISPLAY_DEVICE_INFO)
+          {
+              tst_setRegion(state.cRegion-1);
+              E5_Module_Data.Sf = (e_Lora_Regional)(state.cRegion);
+              E5_Module_AT_Cmd("DR");           
+              //Serial.print("Set Region --\r\n");
+              refreshMode(false);
+              refreshDeviceInfo(true);
+          }
+          else
+          {  
+              ui.selected_mode = (ui.selected_mode+MODE_MAX-1)%MODE_MAX; 
+              refreshMode(true);
+          } 
+          //ui.selected_mode = (ui.selected_mode+MODE_MAX-1)%MODE_MAX;              
+          configHasChanged = true;
+          //refreshMode(true);
+          hasAction = true;
       default:
          break;   
     }  
@@ -238,17 +278,37 @@ void Button_Detection(void){
     }
     else if(ui.selected_mode == MODE_CLEAR_DATA)
     {   
-        Serial.println("MODE_CLEAR_DATA");    
+        //Serial.println("MODE_CLEAR_DATA");    
         hasAction = true;
         Clear_Data();
         if(Module_Is_Busy() == true)
         {
-           Serial.println("MODE_CLEAR_DATA...E5 Module IS BUSY"); 
+           //Serial.println("MODE_CLEAR_DATA...E5 Module IS BUSY"); 
            Clear_Data_Flag = true;
         }          
     }
   }
   if ( prev_select != ui.selected_menu || forceRefresh ) {
+    if((ui.selected_menu == SELECTED_NONE) && (ui.selected_display != DISPLAY_DEVICE_INFO))
+    {
+        refreshMode(true); 
+    }
+    else
+    {
+        refreshMode(false);
+    }
+    if(ui.selected_display == DISPLAY_DEVICE_INFO)
+    {
+        if(ui.selected_menu == SELECTED_NONE){
+            refreshDeviceInfo(true);          
+        }
+        else{
+            //Serial.print("ui.selected_display = ");
+            //Serial.println(ui.selected_display);
+            //Serial.println("refreshDeviceInfo off");
+            refreshDeviceInfo(false);            
+        }
+    }
     if ( prev_select == SELECTED_POWER || ui.selected_menu == SELECTED_POWER ) {
       refreshPower();
     }
@@ -270,7 +330,7 @@ void Button_Detection(void){
 void refresUI() {
   if((Clear_Data_Flag == true) && (Module_Is_Busy() == false))
   {
-      Serial.println("Second Clear Data.....");
+      //Serial.println("Second Clear Data.....");
       Clear_Data_Flag = false; 
       Clear_Data(); 
   }
@@ -302,11 +362,11 @@ void refresUI() {
 
   
   // refresh the graph history part
-  static bool lora_state = E5_Module_Data.Moudlue_Is_Ok;
+//  static bool lora_state = E5_Module_Data.Moudlue_Is_Ok;
   if ( state.hasRefreshed == true
-    || ui.previous_display != ui.selected_display 
-    || lora_state != E5_Module_Data.Moudlue_Is_Ok) {
-    lora_state = E5_Module_Data.Moudlue_Is_Ok;
+    || ui.previous_display != ui.selected_display){ 
+    //|| lora_state != E5_Module_Data.Moudlue_Is_Ok) {
+    //lora_state = E5_Module_Data.Moudlue_Is_Ok;
     ui.lastWrId = state.writePtr;
     switch ( ui.selected_display ) {
       case DISPLAY_RSSI_HIST:
@@ -319,7 +379,8 @@ void refresUI() {
       //  refreshRetryHist();
       //  break;
       case DISPLAY_DEVICE_INFO:
-        refreshDeviceInfo();
+        refreshMode(false);
+        refreshDeviceInfo(false);
         break;
 //      case DISPLAY_GPS_INFO:
 //        refreshGpsInfo();
@@ -344,16 +405,35 @@ void refresUI() {
       refreshGpsInfo();  
   } 
 }
+
+/*void refreshModeBacklight(bool state) {
+  if(state == true){
+      tft.fillRoundRect(X_OFFSET+3*X_SIZE,Y_OFFSET,X_SIZE-5,Y_SIZE,R_SIZE,TFT_WHITE); 
+  }
+  else{
+      tft.fillRoundRect(X_OFFSET+3*X_SIZE,Y_OFFSET,X_SIZE-5,Y_SIZE,R_SIZE,TFT_GRAY);  
+  }
+}*/
 /**
  * Select the way the messages are sent
  * On user action
  * Automatically
  */
-void refreshMode() {
+void refreshMode(bool state) { 
+  static bool state_tmp = false;
   int xOffset = X_OFFSET+3*X_SIZE;
   int yOffset = Y_OFFSET;
-  tft.fillRoundRect(xOffset,yOffset,X_SIZE-5,Y_SIZE,R_SIZE,TFT_WHITE);   
-  tft.setTextColor(TFT_BLACK);
+/*  Serial.printf("ui.selected_display = ");
+  Serial.println(ui.selected_display);  */
+  if(state == false){
+      tft.fillRoundRect(xOffset,yOffset,X_SIZE-5,Y_SIZE,R_SIZE,TFT_GRAY); 
+//      Serial.println("TFT_GRAY");   
+  }
+  else{
+      tft.fillRoundRect(xOffset,yOffset,X_SIZE-5,Y_SIZE,R_SIZE,TFT_WHITE); 
+//      Serial.println("TFT_WHITE");     
+  }
+  tft.setTextColor(TFT_BLACK);    
   tft.setFreeFont(FS9);     // Select the orginal small TomThumb font
   switch ( ui.selected_mode ) {
     case MODE_MANUAL:
@@ -455,6 +535,12 @@ void refreshState() {
   }
 }
 
+void refreshRegion(){
+  tft.setTextColor(TFT_BLACK);
+  tft.setFreeFont(FS9); 
+  tft.fillRoundRect(12+80,95-2,60,18,4,TFT_WHITE);//TFT_GRAY // TFT_WHITE
+  tft.drawString("EU868",12+84,95,GFXFF);  
+}
 void refreshPower() {
   uint16_t color = (ui.selected_menu == SELECTED_POWER)?TFT_WHITE:TFT_GRAY;
   tft.fillRoundRect(X_OFFSET,Y_OFFSET,X_SIZE-BOX_SPACING,Y_SIZE,R_SIZE,color);
@@ -472,7 +558,12 @@ void refreshSf() {
   tft.setTextColor(TFT_BLACK);
   tft.setFreeFont(FS9);     // Select the orginal small TomThumb font
   char sSf[10];
-  sprintf(sSf,"SF   %02d",state.cSf); 
+  if((state.cRegion == US915) || (state.cRegion == US915HYBRID)){
+     sprintf(sSf,"SF   %02d",state.cSf-2); 
+  }
+  else{
+     sprintf(sSf,"SF   %02d",state.cSf);     
+  }
   tft.drawString(sSf,xOffset+5,Y_OFFSET+3, GFXFF);
 }
 
@@ -495,6 +586,8 @@ void refreshTotal(){
   tft.setFreeFont(FS9);     // Select the orginal small TomThumb font
   char sRetry[10];
   sprintf(sRetry,"Total %3d",state.cTotal); 
+  //Serial.print("state.cTotal = "); 
+  //Serial.println(state.cTotal);
   tft.drawString(sRetry,xOffset+5,Y_OFFSET+3, GFXFF);
 }
 
@@ -641,36 +734,46 @@ void refreshSnrHist() {
   
 }  
 
-void refreshDeviceInfo(void)
+void refreshDeviceInfo(bool Status)
 {
-  if ( ui.previous_display == ui.selected_display ){
-    return; 
-  }
-  {
+  int Length = 60;
+  static bool lora_state = false; 
+  if ( lora_state != E5_Module_Data.Moudlue_Is_Ok || ui.previous_display != ui.selected_display ){
     tft.fillRect(HIST_X_OFFSET,HIST_Y_OFFSET-18,HIST_X_TXTSIZE,18,TFT_BLACK);
     tft.fillRect(HIST_X_OFFSET,HIST_Y_OFFSET,HIST_X_SIZE,HIST_Y_SIZE,TFT_BLACK);
     tft.setFreeFont(FM9);    
     tft.setTextColor(TFT_WHITE);
     tft.drawString("Device",HIST_X_OFFSET,HIST_Y_OFFSET-18,GFXFF);
     tft.drawRoundRect(HIST_X_OFFSET,HIST_Y_OFFSET,HIST_X_SIZE,HIST_Y_SIZE,R_SIZE,TFT_WHITE);
-    ui.previous_display = ui.selected_display;
     //state = E5_Module_Data.Moudlue_Is_Ok;
   }
-
-  // clean the bar
-  int xSz = (HIST_X_SIZE - (HIST_X_OFFSET+HIST_X_BAR_OFFSET + MAXBUFFER*HIST_X_BAR_SPACE)) / MAXBUFFER;
-  int xOffset = HIST_X_OFFSET+HIST_X_SIZE-xSz-HIST_X_BAR_SPACE;
-  for ( int i = 0 ; i < MAXBUFFER ; i++ ) {
-     tft.fillRect(xOffset,HIST_Y_OFFSET+2,xSz,HIST_Y_SIZE-4,TFT_BLACK);
-     xOffset -= xSz + HIST_X_BAR_SPACE;
-  }
+//E5_Module_Data.Moudlue_Is_Ok = true;
+  if(lora_state != E5_Module_Data.Moudlue_Is_Ok || ui.previous_display != ui.selected_display)
+  {
+    // clean the bar
+    int xSz = (HIST_X_SIZE - (HIST_X_OFFSET+HIST_X_BAR_OFFSET + MAXBUFFER*HIST_X_BAR_SPACE)) / MAXBUFFER;
+    int xOffset = HIST_X_OFFSET+HIST_X_SIZE-xSz-HIST_X_BAR_SPACE;
+    for ( int i = 0 ; i < MAXBUFFER ; i++ ) {
+       tft.fillRect(xOffset,HIST_Y_OFFSET+2,xSz,HIST_Y_SIZE-4,TFT_BLACK);
+       xOffset -= xSz + HIST_X_BAR_SPACE;
+    }
+    lora_state = E5_Module_Data.Moudlue_Is_Ok;
   if(E5_Module_Data.Moudlue_Is_Ok == true)
   {
       xOffset = HIST_X_OFFSET + 10;
-      tft.setFreeFont(FSSO9);    
-      tft.setTextColor(TFT_BLUE);
-      tft.drawString("LoRaWAN",xOffset,HIST_Y_OFFSET+2,GFXFF);    
+      int yOffset = HIST_Y_OFFSET + 2;
       tft.setFreeFont(FM9);    
+      tft.setTextColor(TFT_BLUE);
+      tft.drawString("LoRaWAN",xOffset,yOffset,GFXFF);
+      yOffset += 18;    
+//      tft.setFreeFont(FM9);    
+      tft.setTextColor(TFT_WHITE);
+      tft.drawString("Region:",xOffset,yOffset,GFXFF);
+//      tft.setTextColor(TFT_BLACK);
+//      tft.setFreeFont(FS9); 
+//      tft.fillRoundRect(xOffset+80,yOffset-2,60,18,4,TFT_WHITE);//TFT_GRAY // TFT_WHITE
+//      tft.drawString("EU868",xOffset+84,yOffset,GFXFF);
+      tft.setFreeFont(FM9);
       tft.setTextColor(TFT_WHITE);
       char str[100] = {0};
       char str1[50] = {0};
@@ -678,28 +781,29 @@ void refreshDeviceInfo(void)
       strcat(str,"\"");
       strcat(str,E5_Module_Data.DevEui);
       strcat(str,"\"");
-      tft.drawString(str,xOffset,HIST_Y_OFFSET+18,GFXFF);  
+      tft.drawString(str,xOffset,yOffset+18,GFXFF);  
       memset(str, 0, sizeof(str));
       strcpy(str,"AppEui:");
       strcat(str,"\"");
       strcat(str,E5_Module_Data.AppEui);
       strcat(str,"\"");
-      tft.drawString(str,xOffset,HIST_Y_OFFSET+36,GFXFF);   
+      tft.drawString(str,xOffset,yOffset+36,GFXFF);   
       memset(str, 0, sizeof(str));
+//UpdateGpsData(E5_Module_Data.AppKey);
       strcpy(str,"AppKey:");
       strcat(str,"\"");
       memcpy(str1,E5_Module_Data.AppKey,16);
       strcat(str,str1);
-      tft.drawString(str,xOffset,HIST_Y_OFFSET+54,GFXFF);  
+      tft.drawString(str,xOffset,yOffset+54,GFXFF);  
       memset(str, 0, sizeof(str));
       strcpy(str, "        ");
       strcat(str,&E5_Module_Data.AppKey[16]);
       strcat(str,"\""); 
-      tft.drawString(str,xOffset,HIST_Y_OFFSET+72,GFXFF); 
-      tft.setFreeFont(FSSO9);    
+      tft.drawString(str,xOffset,yOffset+72,GFXFF); 
+//      tft.setFreeFont(FSSO9);    
       tft.setTextColor(TFT_BLUE); 
-      tft.drawString("Firmware Version",xOffset,HIST_Y_OFFSET+90,GFXFF);
-      tft.setFreeFont(FM9);    
+      tft.drawString("Firmware Version",xOffset,yOffset+90,GFXFF);
+//      tft.setFreeFont(FM9);    
       tft.setTextColor(TFT_WHITE); 
       memset(str, 0, sizeof(str)); 
       strcpy(str,"Lora  :");
@@ -707,7 +811,7 @@ void refreshDeviceInfo(void)
       strcat(str,"V");
       strcat(str,E5_Module_Data.Version);
       strcat(str,"\""); 
-      tft.drawString(str,xOffset,HIST_Y_OFFSET+108,GFXFF);
+      tft.drawString(str,xOffset,yOffset+108,GFXFF);
   } 
   else
   {
@@ -715,7 +819,54 @@ void refreshDeviceInfo(void)
       tft.setFreeFont(FSSO9);    
       tft.setTextColor(TFT_RED);
       tft.drawString("LoRaWAN No Find",xOffset,HIST_Y_OFFSET+20,GFXFF);          
+  }
   } 
+  ui.previous_display = ui.selected_display;
+  if(E5_Module_Data.Moudlue_Is_Ok == true)
+  {
+  tft.setTextColor(TFT_BLACK);
+  tft.setFreeFont(FS9); 
+  tft.fillRoundRect(HIST_X_OFFSET + 10+80,HIST_Y_OFFSET +18 + 2-2,130,18,4,TFT_BLACK);//TFT_GRAY // TFT_WHITE
+  if(state.cRegion == US915HYBRID)
+  {
+      Length = 130;
+  }
+if(Status == true){
+      tft.fillRoundRect(HIST_X_OFFSET + 10+80,HIST_Y_OFFSET +18 + 2-2,Length,18,4,TFT_WHITE);//TFT_GRAY // TFT_WHITE
+}
+else{
+      tft.fillRoundRect(HIST_X_OFFSET + 10+80,HIST_Y_OFFSET +18 + 2-2,Length,18,4,TFT_GRAY);//TFT_GRAY // TFT_WHITE
+       
+}
+//Serial.print("state.cRegion = ");
+//Serial.println(state.cRegion);
+switch(state.cRegion)
+{
+    case EU868: 
+      tft.drawString("EU868",HIST_X_OFFSET + 10+84,HIST_Y_OFFSET +18 + 2,GFXFF);
+    break;
+    case US915:
+      tft.drawString("US915",HIST_X_OFFSET + 10+84,HIST_Y_OFFSET +18 + 2,GFXFF);
+    break;
+    case US915HYBRID:
+      tft.drawString("US915HYBRID",HIST_X_OFFSET + 10+84,HIST_Y_OFFSET +18 + 2,GFXFF);
+    break;
+    case AU915:
+      tft.drawString("AU915",HIST_X_OFFSET + 10+84,HIST_Y_OFFSET +18 + 2,GFXFF);
+    break;
+    case AS923:
+      tft.drawString("AS923",HIST_X_OFFSET + 10+84,HIST_Y_OFFSET +18 + 2,GFXFF);
+    break;
+    case KR920:
+      tft.drawString("KR920",HIST_X_OFFSET + 10+84,HIST_Y_OFFSET +18 + 2,GFXFF);
+    break;
+    case IN865:
+      tft.drawString("IN865",HIST_X_OFFSET + 10+84,HIST_Y_OFFSET +18 + 2,GFXFF);
+    break;
+  default:
+    break;
+} 
+  }
 }
 //String N_date, N_time,N_lat,N_lng,N_satellites,N_meters;
 //String P_date, P_time,P_lat,P_lng,P_satellites,P_meters;
@@ -732,23 +883,23 @@ void refreshGpsInfo(){
     xOffset = HIST_X_OFFSET+10;
     yOffset = HIST_Y_OFFSET+10;
     tft.drawString("Date: ",xOffset,yOffset,GFXFF);
-    tft.drawString(N_date,xOffset+50,yOffset,GFXFF);
+    tft.drawString(N_date,xOffset+65,yOffset,GFXFF);
     yOffset += 18;
     tft.drawString("Time: ",xOffset,yOffset,GFXFF);
-    tft.drawString(N_time,xOffset+50,yOffset,GFXFF);
+    tft.drawString(N_time,xOffset+65,yOffset,GFXFF);
     yOffset += 18;
     tft.drawString("LAT: ",xOffset,yOffset,GFXFF);
-    tft.drawString(N_lat,xOffset+50,yOffset,GFXFF);      
+    tft.drawString(N_lat,xOffset+65,yOffset,GFXFF);      
     yOffset += 18;
     tft.drawString("LONG: ",xOffset,yOffset,GFXFF);
-    tft.drawString(N_lng,xOffset+50,yOffset,GFXFF); 
+    tft.drawString(N_lng,xOffset+65,yOffset,GFXFF); 
     yOffset += 18;
     tft.drawString("ALT: ",xOffset,yOffset,GFXFF);
-    tft.drawString(N_meters,xOffset+50,yOffset,GFXFF); 
+    tft.drawString(N_meters,xOffset+65,yOffset,GFXFF); 
     yOffset += 18;
 //    tft.drawString("Satellites",xOffset,yOffset,GFXFF);
     tft.drawString("Satellites: ",xOffset,yOffset,GFXFF);
-    tft.drawString(N_satellites,xOffset+120,yOffset,GFXFF);
+    tft.drawString(N_satellites,xOffset+135,yOffset,GFXFF);
                         
     tft.drawRoundRect(HIST_X_OFFSET,HIST_Y_OFFSET,HIST_X_SIZE,HIST_Y_SIZE,R_SIZE,TFT_WHITE);
     ui.previous_display = ui.selected_display;
@@ -882,4 +1033,3 @@ void refreshRetryHist() {
   // }
   
 }
-

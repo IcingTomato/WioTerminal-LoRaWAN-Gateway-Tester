@@ -10,7 +10,7 @@
 
 SqQueue SqQueueRssi;
 SqQueue SqQueueSnr;
-
+bool is_join = false;
 //新建一个softSerial对象，rx,tx
 //SoftwareSerial softSerial1(8,1);
 //SoftwareSerial softSerial1(1,8);
@@ -54,18 +54,21 @@ int Init_E5_Mode(void)  // 使用默认参数初始化E5模块
         E5_Module_Data.Moudlue_Is_Ok = true;
         E5_Module_AT_Cmd("ID");
         E5_Module_AT_Cmd("MODE");
+        E5_Module_AT_Cmd("RETRY");
+        E5_Module_Data.Pwr = state.cPwr;
         E5_Module_AT_Cmd("POWER");
         E5_Module_Data.Adr = false;
         E5_Module_AT_Cmd("ADR");
+        E5_Module_Data.Sf = (e_Lora_Regional)state.cSf;
         E5_Module_AT_Cmd("DR");
-        E5_Module_Data.Sf = EU868;
+        E5_Module_Data.Sf = (e_Lora_Regional)state.cRegion;//KR920;//EU868;
         E5_Module_AT_Cmd("DR");
         E5_Module_AT_Cmd("CH");
         E5_Module_AT_Cmd("KEY");
         E5_Module_AT_Cmd("CLASS");
         E5_Module_AT_Cmd("PORT");
         E5_Module_AT_Cmd("VER");
-        ui.selected_display = DISPLAY_DEVICE_INFO;
+//        ui.selected_display = DISPLAY_DEVICE_INFO;
     }
     else
     {
@@ -82,13 +85,13 @@ int E5_Moudle_Jion(void)
 
 int E5_Module_SendCmsgHexData(void)
 {
-    Serial.println("Send Data....");
+    //Serial.println("Send Data....");
     if(Module_Is_Busy() == true)
     {
-        Serial.println("Module_Is_Busy");
+        //Serial.println("Module_Is_Busy");
         return 0;
     }
-    if((E5_Module_Data.State == NOT_JOINED) || (E5_Module_Data.State == JOIN_FAILED))
+    if(is_join == false)//(E5_Module_Data.State == NOT_JOINED) || (E5_Module_Data.State == JOIN_FAILED))
     {
         if(E5_Module_Data.Moudlue_Is_Ok == false)
         {
@@ -147,7 +150,7 @@ E5_Module_Cmd_t  E5_Module_Cmd[] =
     {"RESET",   "+RESET",        LORA_DEFAULT_TIMEOUT,NULL,          NULL},
     {"PORT",    "+PORT",         LORA_DEFAULT_TIMEOUT,SetPort,       NULL},
     {"MODE",    "+MODE",         LORA_DEFAULT_TIMEOUT,SetMode,       NULL},  
-    {"JOIN",    "Done"/*"Network joined"*/,12000,NULL,         GetNetState},        
+    {"JOIN",    "Done"/*"Network joined"*/,20000,NULL,         GetNetState},        
     {"KEY",     "+KEY: APPKEY",  LORA_DEFAULT_TIMEOUT,SetKey,        NULL},    
     {"CH",      "+CH",           LORA_DEFAULT_TIMEOUT,SetCh,         NULL},        //      
     {"RETRY",   "+RETRY",        LORA_DEFAULT_TIMEOUT,SetRetry,      NULL},
@@ -207,13 +210,13 @@ int E5_Module_AT_Cmd(char *p_cmd)
     {
         if(strcmp(p_cmd,E5_Module_Cmd[cmd_seq].p_cmd) == 0)
         {
-            Serial.println("p_cmd is equal to E5_Module_Cmd");
+            //Serial.println("p_cmd is equal to E5_Module_Cmd");
             break;  
         }  
     }
     if(cmd_seq == E5_MODULE_CMD_LENGTH)
     {
-        Serial.println("END");
+        //Serial.println("END");
         return 0;
     }
     if(strcmp(p_cmd,cmd) == 0)
@@ -225,8 +228,8 @@ int E5_Module_AT_Cmd(char *p_cmd)
         strcat(cmd,"+");   
         strcat(cmd,p_cmd);
     }
-    Serial.print("cmd_seq="); 
-    Serial.println(cmd_seq); 
+    //Serial.print("cmd_seq="); 
+    //Serial.println(cmd_seq); 
     if(E5_Module_Cmd[cmd_seq].Set_E5_Module_Para != NULL)
     {
         //Serial.print("Ser Para");
@@ -243,8 +246,8 @@ int E5_Module_AT_Cmd(char *p_cmd)
     {
         E5_Module_Cmd[cmd_seq].Get_E5_Module_Para();  
     }
-    Serial.print("Response_Flag=");
-    Serial.println(Response_Flag);
+    //Serial.print("Response_Flag=");
+    //Serial.println(Response_Flag);
     if(Response_Flag==0)
     {
 //E5_Comm_Flag = false;
@@ -301,11 +304,13 @@ void GetNetState(void)
 {
     if (strstr(recv_buf,"Network joined") != NULL)
     { 
+        is_join = true;
         E5_Module_Data.State = JOINED;
         E5_Module_SendCmsgHexData();
     }
     else
     {
+        is_join = false;
         E5_Module_Data.State = JOIN_FAILED;            
     }   
 }
@@ -314,6 +319,10 @@ void GetCmsgHexData(void)
 {
     char *p_start = NULL;
     int data = 0;
+    if (strstr(recv_buf,"+CMSGHEX: Please join network first") != NULL)
+    {
+        E5_Module_Data.State = NOT_JOINED;          
+    }
     if (strstr(recv_buf,"RSSI") != NULL)
     {
         E5_Module_Data.State = DWNLINK;
@@ -321,21 +330,21 @@ void GetCmsgHexData(void)
          
         p_start = strstr(recv_buf, "RX");
         if (p_start && (1 == sscanf(p_start, "RX: \"%d\"\r\n", &data))) {
-            Serial.print("RX:");
-            Serial.println(data);
+            //Serial.print("RX:");
+            //Serial.println(data);
         }
       
         p_start = strstr(recv_buf, "RSSI");
       
         if (p_start && (1 == sscanf(p_start, "RSSI %d,", &E5_Module_Data.rssi))) {
-            Serial.print("RSSI:");
-            Serial.println(E5_Module_Data.rssi);
+            //Serial.print("RSSI:");
+            //Serial.println(E5_Module_Data.rssi);
         }
       
         p_start = strstr(recv_buf, "SNR");
         if (p_start && (1 == sscanf(p_start, "SNR %d", &E5_Module_Data.snr))) {
-            Serial.print("SNR:");
-            Serial.println(E5_Module_Data.snr);
+            //Serial.print("SNR:");
+            //Serial.println(E5_Module_Data.snr);
         } 
         SqQueueFillData(&SqQueueRssi,E5_Module_Data.rssi);
         SqQueueFillData(&SqQueueSnr,E5_Module_Data.snr);
@@ -363,14 +372,14 @@ char* SetKey(void)
 char* SetPower(void)
 {
     memset(g_str, 0, sizeof(g_str));
-    if(E5_Module_Data.Pwr>16)
+    /*if(E5_Module_Data.Pwr>16)
     {
         E5_Module_Data.Pwr = 16;  
     }
     else if(E5_Module_Data.Pwr<2)
     {
          E5_Module_Data.Pwr = 2;  
-    }
+    }*/
     itoa(E5_Module_Data.Pwr, g_str, 10);
     return g_str;
 }
@@ -382,14 +391,14 @@ void GetPower(void)
     p_start = strstr(recv_buf, "+POWER");
     sscanf(p_start, "+POWER: %2s,", str_tmp);
     E5_Module_Data.Pwr = atoi(str_tmp);
-    Serial.println(E5_Module_Data.Pwr);        
+    //Serial.println(E5_Module_Data.Pwr);        
 }
 void GetVersion(void)
 {
     char *p_start = NULL;
     p_start = strstr(recv_buf, "+VER");
     sscanf(p_start, "+VER: %10s,", E5_Module_Data.Version);
-    Serial.println(E5_Module_Data.Version);      
+    //Serial.println(E5_Module_Data.Version);      
 }
 void GetId(void) 
 {
@@ -430,10 +439,10 @@ void GetId(void)
       E5_Module_Data.AppEui[i]= str[j];     
     }       
 #ifdef DEBUG      
-    Serial.println(E5_Module_Data.DevAddr);
-    Serial.println(E5_Module_Data.DevEui);
-    Serial.println(E5_Module_Data.AppEui);
-    Serial.println(E5_Module_Data.AppKey); 
+    //Serial.println(E5_Module_Data.DevAddr);
+    //Serial.println(E5_Module_Data.DevEui);
+    //Serial.println(E5_Module_Data.AppEui);
+    //Serial.println(E5_Module_Data.AppKey); 
 #endif 
 }
 char* SetSf(void)
@@ -454,6 +463,21 @@ char* SetSf(void)
             break;
         case US915:
             strcpy(g_str,"US915");
+            break;
+        case US915HYBRID:
+            strcpy(g_str,"US915HYBRID");
+            break;
+        case AU915:
+            strcpy(g_str,"AU915");
+            break;
+        case AS923:
+            strcpy(g_str,"AS923");
+            break;
+        case KR920:
+            strcpy(g_str,"KR920");
+            break;
+        case IN865:
+            strcpy(g_str,"IN865");
             break;
         default:
             return NULL;  
@@ -598,8 +622,8 @@ void GetSerialDataPolling(void)
            startMillis = millis();
            init_flag = true; 
            index = 0; 
-           Serial.print("startMillis = ");
-           Serial.println(startMillis);      
+           //Serial.print("startMillis = ");
+           //Serial.println(startMillis);      
        }
      while (Serial1.available() > 0) {
         ch = Serial1.read();
@@ -618,7 +642,7 @@ void GetSerialDataPolling(void)
       {
           E5_Comm_Flag = false;
           init_flag = false;
-          Serial.println("AT CMD Polling Success....");   
+          //Serial.println("AT CMD Polling Success....");   
           //return 1;
           if(E5_Module_Cmd[cmd_seq].Get_E5_Module_Para != NULL)
           {
@@ -634,10 +658,10 @@ void GetSerialDataPolling(void)
           {
               E5_Module_Cmd[cmd_seq].Get_E5_Module_Para();  
           }
-          Serial.print("millis = ");
-          Serial.println(millis()); 
-          Serial.print("timeout_ms = ");
-          Serial.println(E5_Module_Cmd[cmd_seq].timeout_ms);     
+          //Serial.print("millis = ");
+          //Serial.println(millis()); 
+          //Serial.print("timeout_ms = ");
+          //Serial.println(E5_Module_Cmd[cmd_seq].timeout_ms);     
           E5_Comm_Flag = false;
           init_flag = false;
           Serial.println("AT CMD Polling Timeout....");          

@@ -21,8 +21,8 @@
 #define CFG_eu868   1
 #define TXCONF_ATTEMPTS 10
 
-#define MAXPOWER    127
-#define SLOWERSF    255
+#define MAXPOWER    22//127
+#define SLOWERSF    12//255
 #define LOSTFRAME   255
 #define NODATA      255
 
@@ -43,6 +43,7 @@
 typedef struct s_state {
   int8_t    cPwr;     // Current Power
   uint8_t   cSf;      // Current SF
+  uint8_t   cRegion;  // Current Region
   uint8_t   cRetry;   // Current Number of retry
   uint16_t  cTotal;
 //  e_state   cState;   // Current State (Joined / NotJoined)
@@ -73,6 +74,7 @@ void initState();
 void tst_setPower(int8_t pwr);
 void tst_setSf(uint8_t sf);
 void tst_setRetry(uint8_t retry);
+void tst_setRegion(uint8_t Region);
 void addInBuffer(int16_t rssi, int16_t snr, uint8_t retry, uint16_t seq, bool lost);
 uint8_t getIndexInBuffer(int i);
 uint8_t getLastIndexWritten();

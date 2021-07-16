@@ -20,17 +20,20 @@
 #include "config.h"
 #include "testeur.h"
 #include "E5_Module.h"
+#include "ui.h"
 
 state_t state;
 void initState() {
   if ( ! readConfig() ) 
   {
+    //Serial.println("Defaulr para");
     tst_setPower(MAXPOWER);  
     tst_setSf(SLOWERSF);      
-    tst_setRetry(3);    
+    tst_setRetry(3);
+    tst_setRegion(EU868);
+    state.cTotal  = 100;    
   }
 //  state.cState = NOT_JOINED;
-  state.cTotal  = 10;
   state.readPtr = 0;
   state.writePtr = 0;
   state.elements = 0;
@@ -88,15 +91,31 @@ uint8_t getLastIndexWritten() {
 
 
 void tst_setPower(int8_t pwr) {
-  if ( pwr < 2 ) pwr = 2;
-  #if defined CFG_eu868
+//  if ( pwr < 2 ) pwr = 2;
+/*  #if defined CFG_eu868
    if ( pwr > 16 ) pwr = 16;
    pwr &= 0xFE;
   #elif defined CFG_us915
     if ( pwr > 20 ) pwr = 20;
   #else
     #error "Not Yet implemented"
-  #endif
+  #endif*/
+  if((state.cRegion == EU868) || (state.cRegion == AS923)){
+     if(pwr>16)pwr = 16;
+     if(pwr<2)pwr  = 2;
+  }
+  else if(state.cRegion == KR920){
+     if(pwr>14)pwr = 14;    
+  }
+  else{
+     if(pwr>22)pwr = 22;     
+  }
+  if(state.cRegion == IN865){
+     if(pwr<10)pwr  = 10;    
+  }
+  else{
+     if(pwr<0)pwr  = 0;      
+  }
   state.cPwr = pwr;
 //  E5_Module_Data.Pwr = pwr;
 //  E5_Module_AT_Cmd("POWER");
@@ -104,14 +123,22 @@ void tst_setPower(int8_t pwr) {
 
 void tst_setSf(uint8_t sf) {
 
-  if ( sf < 7 ) sf = 7;
+/*  if ( sf < 7 ) sf = 7;
   #if defined CFG_eu868
     if ( sf > 12 ) sf = 12;
   #elif defined CFG_us915
     if ( sf > 10 ) sf = 10;
   #else
     #error "Not Yet implemented"
-  #endif
+  #endif*/
+  if ( sf > 12 ) sf = 12;
+  if((state.cRegion == US915) || (state.cRegion == US915HYBRID)){ 
+    if ( sf < 9 ) sf = 9;
+    if ( sf > 11 ) sf = 11;  // Region US915 and US915HYBRID only send 11 bytes in the case of DR0,but we need send 13 bytes,  
+  }
+  else{
+    if ( sf < 7 ) sf = 7;
+  }
   state.cSf = sf;
 //  E5_Module_Data.Sf = (e_Lora_Regional)sf;
 //  E5_Module_AT_Cmd("DR");  
@@ -121,6 +148,22 @@ void tst_setRetry(uint8_t retry) {
   if ( retry > TXCONF_ATTEMPTS ) retry = TXCONF_ATTEMPTS;
   if ( retry < 0 ) retry = 0;
   state.cRetry = retry;
+//  E5_Module_Data.Retry = retry;
+//  E5_Module_AT_Cmd("RETRY"); 
+}
+
+void tst_setRegion(uint8_t Region) {
+  if ( Region >= IN865 ) Region = IN865;
+  if ( Region <= EU868 ) Region = EU868;
+  state.cRegion= Region;
+  tst_setPower(state.cPwr);
+  refreshPower();
+  tst_setSf(state.cSf);
+  refreshSf();
+  E5_Module_Data.State = NOT_JOINED;
+  is_join = false;
+  refreshState();
+  Clear_Data();
 //  E5_Module_Data.Retry = retry;
 //  E5_Module_AT_Cmd("RETRY"); 
 }

@@ -19,11 +19,11 @@ void setup(void) {
     
   Serial1.begin(9600);
   while (!Serial1);
-  Serial.print("E5 LORAWAN TEST\r\n");
+//  Serial.print("E5 LORAWAN TEST\r\n");
 //  Init_E5_Mode();
   initState();
   initScreen();
-  Init_E5_Mode();
+//  Init_E5_Mode();
   InitQueue(&SqQueueRssi);
   InitQueue(&SqQueueSnr);
 }
@@ -42,7 +42,7 @@ void loop(void)
     case MODE_MANUAL:
       if ( ui.hasClick)// && canLoRaSend() ) 
       { 
-        Serial.println("MANUAL Send");
+        //Serial.println("MANUAL Send");
         fireMessage = true;
         ui.hasClick = false;
       }
@@ -51,7 +51,7 @@ void loop(void)
       if ( cTime >= ( 1 * 60 * 1000 ) ) 
       {
           cTime = 0;
-          Serial.println("AUTO_1MIN Send");
+          //Serial.println("AUTO_1MIN Send");
           fireMessage = true;
       }
       break;
@@ -66,8 +66,8 @@ void loop(void)
   {
       E5_Module_SendCmsgHexData();
   }
-  delay(10);
+//  delay(10);
   long duration = millis() - sTime;
-  if ( duration < 0 ) duration = 10;
+//  if ( duration < 0 ) duration = 10;
   cTime += duration;
 }

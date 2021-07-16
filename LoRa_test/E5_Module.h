@@ -7,7 +7,7 @@
 
 extern SqQueue SqQueueRssi;
 extern SqQueue SqQueueSnr;
-
+extern bool is_join;
 #define DEBUG
 #define E5_MODULE_CMD_LENGTH (sizeof(E5_Module_Cmd)/sizeof(E5_Module_Cmd[0]))//(10)
 
@@ -39,8 +39,13 @@ enum e_Lora_Regional {
   SF11,
   SF12,
   EU868  = 13, 
-  US915,       
-  UKN_REGIONAL = 255
+  US915,
+  US915HYBRID,
+  AU915,
+  AS923,
+  KR920,
+  IN865,        
+  UKN_REGIONAL = 255        
 };
 
 enum e_Lora_Class {
