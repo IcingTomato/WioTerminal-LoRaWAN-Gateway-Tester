@@ -35,6 +35,7 @@ This project bases using on the Arduino, you need to download the Arduino IDE an
 requite library:
 - [**Seeed_Arduino_LCD**](https://github.com/Seeed-Studio/Seeed_Arduino_LCD)
 - [**Seeed_Arduino_SFUD**](https://github.com/Seeed-Studio/Seeed_Arduino_SFUD)
+- [**TinyGPS**](https://github.com/mikalhart/TinyGPSPlus)
 
 
 
