@@ -608,7 +608,7 @@ Serial.print((char)ch);
 Serial.println("AT CMD Timeout....");
   return 0;
 }
-
+bool Atcmd_Timeout = false;
 void GetSerialDataPolling(void)
 {
    static bool init_flag = false;
@@ -651,8 +651,8 @@ void GetSerialDataPolling(void)
       }
       if(millis() - startMillis >= E5_Module_Cmd[cmd_seq].timeout_ms)
       {
-          E5_Module_Data.Moudlue_Is_Ok = false;
-          ui.selected_display = DISPLAY_DEVICE_INFO;
+//          E5_Module_Data.Moudlue_Is_Ok = false;
+//          ui.selected_display = DISPLAY_DEVICE_INFO;
           //state.hasRefreshed = true;
           if(E5_Module_Cmd[cmd_seq].Get_E5_Module_Para != NULL)
           {
@@ -664,7 +664,8 @@ void GetSerialDataPolling(void)
           //Serial.println(E5_Module_Cmd[cmd_seq].timeout_ms);     
           E5_Comm_Flag = false;
           init_flag = false;
-          Serial.println("AT CMD Polling Timeout....");          
+          Serial.println("AT CMD Polling Timeout....");
+          Atcmd_Timeout = true;          
       }
    }      
 }

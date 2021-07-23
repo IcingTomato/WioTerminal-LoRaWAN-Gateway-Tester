@@ -58,7 +58,7 @@ void UpdateGpsInfo(){
   if(gps.altitude.isUpdated() && gps.altitude.isValid())
   {
     N_meters = String(gps.altitude.meters());
-    Meters = gps.altitude.meters()*100;
+    Meters = gps.altitude.meters();
   }
   if (gps.date.isUpdated() && gps.date.isValid()) 
   {
@@ -76,5 +76,5 @@ void UpdateGpsInfo(){
   }
 }
 int UpdateGpsData(char* destination){
-  sprintf(destination, "\"%08X%08X%08X%02X\"\r\n", (int)(Lat), (int)(Lng),(int)(Meters),(int)Satellites); 
+  sprintf(destination, "\"%08X%08X%04X%02X\"\r\n", (int)(Lat), (int)(Lng),(int)(Meters),(int)Satellites); 
 }

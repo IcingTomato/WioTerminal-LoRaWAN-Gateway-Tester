@@ -7,6 +7,7 @@
 
 extern SqQueue SqQueueRssi;
 extern SqQueue SqQueueSnr;
+extern bool Atcmd_Timeout;
 extern bool is_join;
 #define DEBUG
 #define E5_MODULE_CMD_LENGTH (sizeof(E5_Module_Cmd)/sizeof(E5_Module_Cmd[0]))//(10)

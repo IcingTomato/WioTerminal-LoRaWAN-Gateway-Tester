@@ -15,9 +15,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Wio LoRaWan Field Tester.  If not, see <https://www.gnu.org/licenses/>.
  */  
-#include "TFT_eSPI.h"
+//#include <TFT_eSPI.h>
 #include "testeur.h"
 #include "E5_Module.h"
+
+#define LGFX_USE_V1
+#define LGFX_AUTODETECT // LGFX_WIO_TERMINAL // LGFX_AUTODETECT
+
+#include <LovyanGFX.hpp>
+#include <LGFX_AUTODETECT.hpp>
 
 #ifndef __UI_H
 #define __UI_H
@@ -64,8 +70,9 @@ typedef struct s_ui {
 } ui_t;
 
 extern ui_t ui;
-extern TFT_eSPI tft;
-
+extern LGFX lcd;
+//extern TFT_eSPI tft;
+//extern TFT_eSprite spr;
 void initScreen();
 void refresUI();
 
@@ -77,11 +84,11 @@ void refreshState();
 void refreshRssiHist();
 void refreshSnrHist();
 void refreshRetryHist();
-void refreshMode(bool state);
+void refreshMode();
 //void refreshModeBacklight(bool state);
 void refreshRegion();
 void refreshLastFrame();
-void refreshDeviceInfo(bool Status);
+void refreshDeviceInfo();
 void refreshGpsInfo();
 void UpdateGpsInfo();
 void Clear_Data();

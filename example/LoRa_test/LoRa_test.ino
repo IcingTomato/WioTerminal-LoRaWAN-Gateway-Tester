@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <TFT_eSPI.h> // Hardware-specific library
+//#include <TFT_eSPI.h> // Hardware-specific library
 #include <SPI.h>
 #include "E5_Module.h"
 #include "gps.h"
@@ -7,7 +7,7 @@
 #include "testeur.h"
 #include "SqQueue.h"
 
-TFT_eSprite spr = TFT_eSprite(&tft);  // Sprite
+//TFT_eSprite spr = TFT_eSprite(&tft);  // Sprite
 
 void setup(void) {
   Serial.begin(115200);
@@ -66,8 +66,18 @@ void loop(void)
   {
       E5_Module_SendCmsgHexData();
   }
+  if((Module_Is_Busy() == false) && (Atcmd_Timeout == true))
+  {
+      Atcmd_Timeout = false;
+      Init_E5_Mode();  
+  }
 //  delay(10);
   long duration = millis() - sTime;
 //  if ( duration < 0 ) duration = 10;
   cTime += duration;
+//  if(duration > 10)
+//  {
+//  Serial.print("duration");
+//  Serial.println(duration);
+//  }
 }

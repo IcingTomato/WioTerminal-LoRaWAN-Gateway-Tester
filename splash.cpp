@@ -33,7 +33,7 @@ void draw_splash_helium(int xOffset, int yOffset, int density) {
         uint16_t b = ((pixel[2] >> 3) * density) / 100;
         uint16_t color = ( ( r << 11 ) & 0xF800 ) | ( ( g << 5 ) & 0x07E0 ) | ( b & 0x001F ); 
         if ( pixel[2] > 2*pixel[0] ) { 
-          tft.drawPixel(x,y,color);
+          lcd.drawPixel(x,y,color);
         }
     }
   }
@@ -59,7 +59,7 @@ void draw_splash_ttn(int xOffset, int yOffset, int density) {
         }
         uint16_t color = ( ( r << 11 ) & 0xF800 ) | ( ( g << 5 ) & 0x07E0 ) | ( b & 0x001F ); 
         if ( pixel[2] > 2*pixel[0] || ( pixel[0]+pixel[1]+pixel[2] < 50 ) ) { 
-          tft.drawPixel(x,y,color);
+          lcd.drawPixel(x,y,color);
         }
     }
   }
