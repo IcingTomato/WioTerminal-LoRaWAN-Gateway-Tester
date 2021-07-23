@@ -4,7 +4,7 @@
 #include "config.h"
 #include "gps.h"
 
-#include<SoftwareSerial.h>
+#include"SoftwareSerial1.h"
 
 #define LORA_DEFAULT_TIMEOUT (1000)
 

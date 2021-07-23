@@ -1,7 +1,7 @@
 #include "config.h"
 #include "gps.h"
 #include "testeur.h"
-#include <SoftwareSerial.h>
+#include"SoftwareSerial1.h"
 #include <TinyGPS++.h>
 
 String N_date, N_time,N_satellites= "0";

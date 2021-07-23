@@ -2,7 +2,7 @@
 #define __E5_Module_H__
 
 #include <Arduino.h>
-#include<SoftwareSerial.h>
+#include"SoftwareSerial1.h"
 #include "SqQueue.h"
 
 extern SqQueue SqQueueRssi;
