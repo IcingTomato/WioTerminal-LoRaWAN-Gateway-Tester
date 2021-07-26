@@ -1,7 +1,7 @@
 #include "config.h"
 #include "gps.h"
 #include "testeur.h"
-#include"SoftwareSerial1.h"
+#include "SoftwareSerial1.h"
 #include <TinyGPS++.h>
 
 String N_date, N_time,N_satellites= "0";
@@ -19,16 +19,13 @@ TinyGPSCustom ExtLng(gps, "GPGGA", 5);  //E for Longitude
 
 void init_softSerial()
 {
-  //初始化软串口通信；
   softSerial1.begin(9600);
-  //监听软串口通信
   softSerial1.listen();
 }
 
 void GetGpsInfoPolling(){
   while (softSerial1.available() > 0) {
     char c = softSerial1.read();
-//    Serial.print(c);
     gps.encode(c);
   }  
 }
@@ -39,13 +36,13 @@ void UpdateGpsInfo(){
     double lat0 = gps.location.lat();
     double lat1 = (lat0 -int(lat0))*60;
     double lat2 = (lat1 - int(lat1))*60;
-    //String 
+
     N_lat = String(int(lat0))+':' + String(int(lat1))+':'+String(lat2) + ' ' + String(ExtLat.value());
     
     double lng0 = gps.location.lng();
     double lng1 = (lng0 -int(lng0))*60;
     double lng2 = (lng1 - int(lng1))*60;
-    //String 
+
     N_lng = String(int(lng0))+':' + String(int(lng1))+':'+String(lng2) + ' ' + String(ExtLng.value());
     Lat = lat0*1000000;
     Lng = lng0*1000000;

@@ -2,15 +2,46 @@
 #define __E5_Module_H__
 
 #include <Arduino.h>
-#include"SoftwareSerial1.h"
 #include "SqQueue.h"
 
 extern SqQueue SqQueueRssi;
 extern SqQueue SqQueueSnr;
+extern SqQueue SqQueueAtCmd;
+
 extern bool Atcmd_Timeout;
-extern bool is_join;
-#define DEBUG
+
 #define E5_MODULE_CMD_LENGTH (sizeof(E5_Module_Cmd)/sizeof(E5_Module_Cmd[0]))//(10)
+
+enum e_module_AT_Cmd{ 
+  AT_OK,
+  AT_POWER,
+  AT_REGION,
+  AT_SF,
+  AT_ADR,
+  AT_VER,
+  AT_ID,
+  AT_DEVEUI,
+  AT_APPEUI,
+  AT_RESET,
+  AT_PORT,
+  AT_MODE,
+  AT_JOIN,
+  AT_KEY,
+  AT_CH,
+  AT_RETRY,
+  AT_LOWPOWER,
+  AT_TEST,
+  AT_CMSGHEX,
+  AT_CLASS,
+  AT_MAX,
+};
+
+enum e_module_Response_Result{
+  MODULE_IDLE, 
+  MODULE_RECEIVING,    
+  MODULE_TIMEOUT,
+  MODULE_ACK_SUCCESS,   
+};
 
 enum e_module_state {
   NOT_JOINED    = 1,    // Not connected yet
@@ -32,21 +63,26 @@ enum e_Lora_Mode {
   UKN_MODE = 255
 };
 
-enum e_Lora_Regional {
+enum e_Lora_Sf {
   SF7    = 7,
   SF8,
   SF9,
   SF10,
   SF11,
-  SF12,
-  EU868  = 13, 
+  SF12,        
+  UKN_SF = 255        
+};
+
+enum e_Lora_Regional {
+  MIN_REGIONAL,
+  EU868, 
   US915,
   US915HYBRID,
   AU915,
   AS923,
   KR920,
   IN865,        
-  UKN_REGIONAL = 255        
+  MAX_REGIONAL        
 };
 
 enum e_Lora_Class {
@@ -58,7 +94,8 @@ enum e_Lora_Class {
 
 typedef struct s_E5_Module_Data {
   uint8_t           Pwr;     // Current Power
-  e_Lora_Regional   Sf;      // Current SF
+  e_Lora_Sf         Sf;      // Current SF
+  e_Lora_Regional   Region;
   uint8_t           Port;    // Current PORT
   uint8_t           Ch;      // CH Number
   uint8_t           Retry;   // Current Number of retry
@@ -66,7 +103,8 @@ typedef struct s_E5_Module_Data {
   e_module_state    State;   // Current State (Joined / NotJoined)
   e_Lora_Mode       Mode;
   e_Lora_Class      Class;
-  bool              Moudlue_Is_Ok;
+  bool              Moudlue_is_exist;
+  bool              Moudlue_is_join;
   int               SendNumber;
   int               RecvNumber;
   
@@ -77,7 +115,7 @@ typedef struct s_E5_Module_Data {
   char DevEui[24];
   char AppEui[24];
   char AppKey[48];
-  char Version[10];
+  char Version[20];
   char SendData[100];
   char RecvData[100];  
 } E5_Module_Data_t;
@@ -96,12 +134,9 @@ extern E5_Module_Cmd_t  E5_Module_Cmd[];
 extern char recv_buf[512];
 
 int at_send_check_response(char *p_ack, int timeout_ms, char *p_cmd, ...);
-void recv_prase(char *p_msg);
 int E5_Module_AT_Cmd(char *p_cmd);
-//void init_softSerial(void);
-
-int Init_E5_Mode(void);
+void Init_E5_Mode(void);
 int E5_Module_SendCmsgHexData(void);
-void GetSerialDataPolling(void);
 bool Module_Is_Busy(void);
+void E5_Module_Polling();
 #endif

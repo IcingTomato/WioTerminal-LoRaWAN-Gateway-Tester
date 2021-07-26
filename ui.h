@@ -1,21 +1,3 @@
-/**
- * This file is part of Wio LoRaWan Field Tester.
- *
- *   Wio LoRaWan Field Tester is free software created by Paul Pinault aka disk91. 
- *   You can redistribute it and/or modify it under the terms of the 
- *   GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   any later version.
- *
- *  Wio LoRaWan Field Tester is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Wio LoRaWan Field Tester.  If not, see <https://www.gnu.org/licenses/>.
- */  
-//#include <TFT_eSPI.h>
 #include "testeur.h"
 #include "E5_Module.h"
 
@@ -59,23 +41,26 @@ typedef struct s_ui {
   uint8_t selected_menu;    // What menu zone is selected for settings
   uint8_t selected_mode;    // What mode do we want ? manual / auto
   e_module_state displayed_state;  // showning LoRaWan join state
-  uint8_t transmit_v;       // Can transmit due to dity cycle - count down ?
 
-  uint8_t lastWrId;
   uint8_t selected_display; // What graph we want to display
   uint8_t previous_display;
   bool    hasClick;         // Hit on button
-  bool    alertMode;        // LiPo alert is on
-  
+  bool    hasRefreshed;
+  bool    refreshPower;
+  bool    refreshSf;
+  bool    refreshTotal;
+  bool    refreshMode;
+  bool    refreshLastFrame;
+  bool    refreshDeviceInfo;
 } ui_t;
 
 extern ui_t ui;
 extern LGFX lcd;
-//extern TFT_eSPI tft;
-//extern TFT_eSprite spr;
+extern bool Clear_Data_Flag; 
+extern bool hasAction;
+
 void initScreen();
 void refresUI();
-
 void refreshPower(); 
 void refreshSf();
 void refreshRetry();
@@ -85,17 +70,13 @@ void refreshRssiHist();
 void refreshSnrHist();
 void refreshRetryHist();
 void refreshMode();
-//void refreshModeBacklight(bool state);
-void refreshRegion();
 void refreshLastFrame();
 void refreshDeviceInfo();
 void refreshGpsInfo();
 void UpdateGpsInfo();
 void Clear_Data();
-// void refreshTxRssi();
-// void refreshTxHs();
 void refreshGps();
-// bool refreshLiPo();
+void Button_Detection(void);
 void draw_splash_helium(int xOffset, int yOffset, int density);
 void draw_splash_ttn(int xOffset, int yOffset, int density);
 

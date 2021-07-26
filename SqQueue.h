@@ -1,7 +1,7 @@
 #ifndef __SQQUEUE_H__
 #define __SQQUEUE_H__
 
-#define MAXSIZE (33)//20 /* 存储空间初始分配量，实际分配量是MAXSIZE-1 */
+#define MAXSIZE (33) /* 存储空间初始分配量，实际分配量是MAXSIZE-1 */
 
 typedef int Status; 
 typedef int QElemType; /* QElemType类型根据实际情况而定，这里假设为int */
