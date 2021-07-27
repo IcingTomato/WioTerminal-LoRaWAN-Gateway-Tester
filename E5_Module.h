@@ -78,11 +78,11 @@ enum e_Lora_Regional {
   EU868, 
   US915,
   US915HYBRID,
-  AU915,
   AS923,
   KR920,
   IN865,        
-  MAX_REGIONAL        
+  MAX_REGIONAL,
+  AU915,  // Reserve      
 };
 
 enum e_Lora_Class {

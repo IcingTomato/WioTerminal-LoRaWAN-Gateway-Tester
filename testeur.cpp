@@ -11,7 +11,7 @@ void initState() {
     tst_setPower(16);  
     tst_setSf(12);      
     state.cTotal  = 100;  
-    ui.selected_display = DISPLAY_DEVICE_INFO;//DISPLAY_RSSI_HIST;//DISPLAY_DEVICE_INFO;//DISPLAY_RSSI_HIST;    
+    ui.selected_display = DISPLAY_RSSI_HIST;    
     storeConfig();  
   }
 }
@@ -40,7 +40,7 @@ void tst_setSf(uint8_t sf) {
   if ( sf > 12 ) sf = 12;
   if((state.cRegion == US915) || (state.cRegion == US915HYBRID)){ 
     if ( sf < 9 ) sf = 9;
-//    if ( sf > 11 ) sf = 11;  // Region US915 and US915HYBRID only send 11 bytes in the case of DR0,but we need send 13 bytes,  
+    if ( sf > 11 ) sf = 11;  // Region US915 and US915HYBRID only send 11 bytes in the case of DR0,but we need send 13 bytes,  
   }
   else{
     if ( sf < 7 ) sf = 7;

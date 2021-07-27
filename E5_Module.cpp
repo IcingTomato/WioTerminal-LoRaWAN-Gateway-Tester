@@ -191,7 +191,11 @@ void GetCmsgHexData(void)
       
         p_start = strstr(recv_buf, "SNR");
         if (p_start && (1 == sscanf(p_start, "SNR %d", &E5_Module_Data.snr))) {
-        } 
+        }
+        if(E5_Module_Data.rssi >= 0)
+        {
+          E5_Module_Data.rssi = -1;   
+        }
         SqQueueFillData(&SqQueueRssi,E5_Module_Data.rssi);
         SqQueueFillData(&SqQueueSnr,E5_Module_Data.snr); 
     }
@@ -341,7 +345,7 @@ char* SetPort(void)
 }
 
 char* SetNetState(void){
-    E5_Module_Data.State = IN_TX;
+    E5_Module_Data.State = JOINING;
     memset(g_str, 0, sizeof(g_str));
     strcpy(g_str,"FORCE");
     return g_str;

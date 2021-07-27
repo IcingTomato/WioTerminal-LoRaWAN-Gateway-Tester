@@ -83,7 +83,6 @@ void CheckSerialData(){
   if(recv_index > 0)
   {
     char str[40] = {0};
-    bool Set_Error_Flag = true;
     bool Set_DevEui_Flag = false;
     bool Set_AppEui_Flag = false;
     bool Set_AppKey_Flag = false;
@@ -91,7 +90,6 @@ void CheckSerialData(){
     p_start = strstr(Serial_recv_buf, "DevEui");
     if(p_start != NULL)
     {
-        Set_Error_Flag = false;
         sscanf(p_start, "DevEui,\"%16s,", &str);
         if(Check_Parameter(str,16)){
              Serial.println("DevEui parameter error");
@@ -106,7 +104,6 @@ void CheckSerialData(){
     p_start = strstr(Serial_recv_buf, "AppEui");
     if(p_start != NULL)
     {
-        Set_Error_Flag = false;
         sscanf(p_start, "AppEui,\"%16s,", &str);
         if(Check_Parameter(str,16)){
            Serial.println("AppEui parameter error");
@@ -121,7 +118,6 @@ void CheckSerialData(){
     p_start = strstr(Serial_recv_buf, "AppKey");
     if(p_start != NULL)
     {
-        Set_Error_Flag = false;
         sscanf(p_start, "AppKey,\"%32s,", &str);
         if(Check_Parameter(str,32)){
            Serial.println("AppKey parameter error");
@@ -133,34 +129,35 @@ void CheckSerialData(){
            Serial.println("AppKey is set Success");         
         }
     }
-    if(Set_Error_Flag == true)
+    if((Set_DevEui_Flag==false) || (Set_AppEui_Flag==false) || (Set_AppKey_Flag==false))
     {
        Serial.println("The correct format is as follows");
        Serial.println("DevEui,\"0123456789ABCDEF\"");
        Serial.println("AppEui,\"0123456789ABCDEF\"");
        Serial.println("AppKey,\"2B7E151628AED2A6ABF7158809CF4F3C\"");            
     }
-    else{
-        if(ui.selected_mode != MODE_MANUAL) // Forced in MODE_MANUAL 
-        {
-            ui.selected_mode = MODE_MANUAL;
-            ui.refreshMode = true;
-        }
-        E5_Module_Data.State = NOT_JOINED;
-        E5_Module_Data.Moudlue_is_join = false;
-        Clear_Data();
-        Clear_Data_Flag = true;
-        ClearQueue(&SqQueueAtCmd);
-        if(Set_DevEui_Flag){
-           SqQueueFillData(&SqQueueAtCmd,AT_DEVEUI);          
-        }
-        if(Set_AppEui_Flag){
-           SqQueueFillData(&SqQueueAtCmd,AT_APPEUI);          
-        }
-        if(Set_AppKey_Flag){
-           SqQueueFillData(&SqQueueAtCmd,AT_KEY);          
-        }
-        SqQueueFillData(&SqQueueAtCmd,AT_ID);
+    if(Set_DevEui_Flag || Set_AppEui_Flag || Set_AppKey_Flag)
+    {
+      if(ui.selected_mode != MODE_MANUAL) // Forced in MODE_MANUAL 
+      {
+          ui.selected_mode = MODE_MANUAL;
+          ui.refreshMode = true;
+      }
+      E5_Module_Data.State = NOT_JOINED;
+      E5_Module_Data.Moudlue_is_join = false;
+      Clear_Data();
+      Clear_Data_Flag = true;
+      ClearQueue(&SqQueueAtCmd);
+      if(Set_DevEui_Flag){
+         SqQueueFillData(&SqQueueAtCmd,AT_DEVEUI);          
+      }
+      if(Set_AppEui_Flag){
+         SqQueueFillData(&SqQueueAtCmd,AT_APPEUI);          
+      }
+      if(Set_AppKey_Flag){
+         SqQueueFillData(&SqQueueAtCmd,AT_KEY);          
+      }
+      SqQueueFillData(&SqQueueAtCmd,AT_ID);
     }
   }
   recv_index = 0;
