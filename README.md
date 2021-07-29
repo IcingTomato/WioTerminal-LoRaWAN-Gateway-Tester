@@ -6,6 +6,10 @@ The RoLa gateway tester is developed to deploy the LoRaWAN network, for example,
 
 I was analysing the Rola tester market, the price between 150 - 400 pounds and some of them does not have backend application to report the network seen the signal, current time and status etc. So I decide to make a cheap one to help user to reduce their expenditure. 
 
+In addition, I very much appreciate [**Paul Pinault**](https://github.com/disk91) his UI contribution, it made the project shortening devolvement time.
+
+<div align=center><img width = 600 src="https://files.seeedstudio.com/wiki/LoRa_WioTerminal/%E5%9C%BA%E6%99%AF%E5%9B%BE2.jpg"/></div>
+
 ## Feature
 
 - Selection for || Power || SF || set test numbers(10-990) || Mode selection ||
