@@ -1,6 +1,6 @@
 # WioTerminal RoLa-gateway-tester
 
-## introduction
+## Introduction
 
 The RoLa gateway tester is developed to deploy the LoRaWAN network, for example, we need to verify what is the coverage and if the signal is work in a normal range. Meanwhile, The RoLa tester is a multipurpose, mobile, tool to help you to find out the best location via GPS and monitor the coverage in a zone.
 
@@ -20,13 +20,14 @@ In addition, I very much appreciate [**Paul Pinault**](https://github.com/disk91
 - Graph selection display of RSSI and SNR
 - Uplink and Downlink times number and packet loss probability
 - GPS position reporting and the current time and satellites number.
-
+- User is able to defined the DevEui, APPEui and Appkey 
 
 ## Hardware 
 those products are low cost than I saw on market, total less than 70 pounds.
 
 - [**WioTerminal**](https://www.seeedstudio.com/Wio-Terminal-p-4509.html)
 - [**Wio Terminal Chassis - Battery (650mAh)**](https://www.seeedstudio.com/Wio-Terminal-Chassis-Battery-650mAh-p-4756.html)
+- [**LoRa gateway tester**]()
 
 
 
