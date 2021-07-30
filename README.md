@@ -4,8 +4,8 @@
 
 The LoRaWAN Gateway Tester is developed to deploy the LoRaWAN network, for example, we need to verify what is the coverage and if the signal is work in a normal range. Meanwhile, The LoRaWAN Gateway Tester is a multipurpose, mobile, tool to help you to find out the best location via GPS and monitor the coverage in a zone.
 
-I was analysing the Rola tester market, the price between 200 - 450 dollars and some of them does not have backend application to report the network seen the signal, current time and status etc. So I decide to make a cheap one to help user to reduce their expenditure.
-in this project, I made all the functions have worked, but I was struggling with how to make a tidy UI for the Wio terminal, and then I find a great contributor  [**Paul Pinault**](https://github.com/disk91/WioLoRaWANFieldTester) has made the great UI for the Wio terminal and there have some similar functions I can use, so I very appreciate his open resource.
+This project idea is from [**Paul Pinault**](https://github.com/disk91/WioLoRaWANFieldTester) his [**WioLoRaWANFieldTester**](https://www.disk91.com/2021/technology/lora/low-cost-lorawan-field-tester/) report,, and we are very honoured to get his link and open resource, we very appreciate him, he is a great contributor. Meanwhile, we also were analysing the Rola tester market, the price is normally between 200 - 450 dollars and some of them does not have a backend application to report the network seen the signal, current time and status etc. So we decide to make a cheap one to help user to reduce their expenditure. in this project, I used LoRa-E5 and GNSS module realizes the function of LoRaWAN Gateway Tester need, and combine Paul Pinault his natty UI for the Wio terminal, then produced this WioTerminal LoRaWAN Gateway Tester.
+
 
 <div align=center><img width = 600 src="https://files.seeedstudio.com/wiki/LoRa_WioTerminal/%E5%9C%BA%E6%99%AF%E5%9B%BE2.jpg"/></div>
 
@@ -35,7 +35,7 @@ Those products are low cost than I saw on market, total less than 100 dollars.
 
 ### Wio Terminal instruction
 
-The LoRa tester is basically sending a frame on demand in regular to the gateway and then transfer to server(Uplink), after that it will enter waiting for an ACK status. If the RoLa tester does not get the responded, it will sent the same frame again until the number of setting. conversely, the ACK obtain the respond(Downlink) back to LoRa tester, that mean the message is passed to a backend service, eventually the imformation will display on the Wio terminal screen. 
+The LoRaWAN Gateway Tester is basically sending a frame on demand in regular to the gateway and then transfer to server(Uplink), after that it will enter waiting for an ACK status. If the RoLa tester does not get the responded, it will sent the same frame again until the number of setting. conversely, the ACK obtain the respond(Downlink) back to LoRa tester, that mean the message is passed to a backend service, eventually the imformation will display on the Wio terminal screen. 
 
 This project bases using on the Arduino, you need to download the Arduino IDE and some library on your PC, if you are first time use the Wio terminal, here is the [**Wio terminal instruction**](https://wiki.seeedstudio.com/Wio-Terminal-Getting-Started/).
 
