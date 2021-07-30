@@ -150,8 +150,13 @@ if you want more detail, just go to check the file list.
 
 The 3D printed enclosure can be found in file list which is PCBA WioTerminal Chassis  H and PCB file. You will find the the all design on it. You will also find the FreeCad source file in case you want to modify /improve it.
 
+The 3D prited work as below: 
 
+<div align=center><img width = 500 src="https://files.seeedstudio.com/wiki/LoRa_WioTerminal/feature.png"/></div>
 
+<div align=center><img width = 500 src="https://files.seeedstudio.com/wiki/LoRa_WioTerminal/preview.png"/></div>
+
+<div align=center><img width = 500 src="https://files.seeedstudio.com/wiki/LoRa_WioTerminal/back.png"/></div>
 
 
 
