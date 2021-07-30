@@ -45,6 +45,11 @@ requite library:
 - [**TinyGPS**](https://github.com/mikalhart/TinyGPSPlus)
 - [**LovyanGFX**](https://github.com/lovyan03/LovyanGFX)
 
+### Note
+
+When you upload the code, please selecte slave mode.
+    <div align=center><img width = 400 src="https://files.seeedstudio.com/wiki/LoRa_WioTerminal/ROLA.png"/></div>
+
 ### TheThingsNetwork Console Configuration Setup
 
 In this project, I test the LoRa tester on [**TheThingsNetwork**](https://www.thethingsnetwork.org) platform, the instuction as below:
