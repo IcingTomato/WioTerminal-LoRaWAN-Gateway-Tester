@@ -26,7 +26,7 @@ Those products are low cost than I saw on market, total less than 100 dollars.
 
 - [**WioTerminal**](https://www.seeedstudio.com/Wio-Terminal-p-4509.html)
 - [**Wio Terminal Chassis - Battery (650mAh)**](https://www.seeedstudio.com/Wio-Terminal-Chassis-Battery-650mAh-p-4756.html)
-- [**LoRa gateway tester**](https://www.seeedstudio.com/Wio-Terminal-p-4509.html)
+- [**Wio Terminal Chassis - LoRa-E5 and GNSS**](https://www.seeedstudio.com/Wio-Terminal-p-4509.html)
 
 
 
