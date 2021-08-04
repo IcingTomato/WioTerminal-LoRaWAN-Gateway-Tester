@@ -2,27 +2,27 @@
 
 ## Introduction
 
-The LoRaWAN Gateway Tester is developed to deploy the LoRaWAN network, for example, we need to verify what is the coverage and if the signal is work in a normal range. Meanwhile, The LoRaWAN Gateway Tester is a multipurpose, mobile, tool to help you to find out the best location via GPS and monitor the coverage in a zone.
+The LoRaWAN Gateway Tester is a multipurpose portable tool that can detect the coverage of your LoRaWAN gateways. It will then apprise you of whether the signal is in a normal range. Designed to make the deployment of a LoRaWAN network easier, the LoRaWAN Gateway Tester will help you determine the optimum location for your LoRaWAN gateway deployment.
 
-This project idea is from [**Paul Pinault**](https://github.com/disk91/WioLoRaWANFieldTester) his [**WioLoRaWANFieldTester**](https://www.disk91.com/2021/technology/lora/low-cost-lorawan-field-tester/) report,, and we are very honoured to get his link and open resource, we very appreciate him, he is a great contributor. Meanwhile, we also were analysing the Rola tester market, the price is normally between 200 - 450 dollars and some of them does not have a backend application to report the network seen the signal, current time and status etc. So we decide to make a cheap one to help user to reduce their expenditure. in this project, I used LoRa-E5 and GNSS module realizes the function of LoRaWAN Gateway Tester need, and combine Paul Pinault his natty UI for the Wio terminal, then produced this WioTerminal LoRaWAN Gateway Tester.
+Prior to developing this, we checked out the LoRa tester market; the price usually ranges from $200 to $500, however, some of them lack a backend application to report the network signal, current time, status, and several other critical information. Therefore, we decided to bring a low-cost version ourselves that is able to do more! This project is based on [**Paul Pinault**](https://github.com/disk91/WioLoRaWANFieldTester)’s [**WioLoRaWANFieldTester**](https://www.disk91.com/2021/technology/lora/low-cost-lorawan-field-tester/) report. We are honoured to have access to his link and we thank him for his contributions. We combined Paul Pinault’s natty UI for the Wio terminal with LoRa-E5 and GNSS modules to produce the function of the LoRaWAN Gateway Tester.
 
 
 <div align=center><img width = 600 src="https://files.seeedstudio.com/wiki/LoRa_WioTerminal/%E5%9C%BA%E6%99%AF%E5%9B%BE2.jpg"/></div>
 
 ## Feature
 
-- Selection for || Power || SF || set test numbers(10-990) || Mode selection ||
-- network segment selection (EU868, US915, US915HYBRID, AS923, KR920, IN865)
-- LoRa device information such as DevEui, APPEui, Appkey and Firmware version 
-- record the last time test data
-- display RoLa device connection, network connection, uplink and downlink status
-- Graph selection display of RSSI and SNR
-- Uplink and Downlink times number and packet loss probability
-- GPS position reporting and the current time and satellites number.
-- User is able to defined the DevEui, APPEui and Appkey 
+- Menu selection for different modes of operation; Power controls, SF, test numbers input, etc.
+- Supports various network segments (EU868, US915, US915HYBRID, AS923, KR920, IN865)
+- Display LoRa device connection and uplink-downlink status
+- Backup of previous test results
+- Graphical display of RSSI and SNR
+- Shows the number of uplink and downlink times, as well as the likelihood of packet loss
+- GPS position reporting, as well as the current time and number of satellites.
+- Display LoRa Device information i.e. DevEui, APPEui, Appkey, Firmware version, and more
+- Define the DevEui, APPEui and Appkey
 
 ## Hardware 
-Those products are low cost than I saw on market, total less than 100 dollars.
+The hardware used in this project is more affordable than most on the market, with the total cost adding up to less than a hundred dollars.
 
 - [**WioTerminal**](https://www.seeedstudio.com/Wio-Terminal-p-4509.html)
 - [**Wio Terminal Chassis - Battery (650mAh)**](https://www.seeedstudio.com/Wio-Terminal-Chassis-Battery-650mAh-p-4756.html)
@@ -35,12 +35,10 @@ Those products are low cost than I saw on market, total less than 100 dollars.
 
 ### Wio Terminal instruction
 
-The LoRaWAN Gateway Tester is basically sending a frame on demand in regular to the gateway and then transfer to server(Uplink), after that it will enter waiting for an ACK status. If the RoLa tester does not get the responded, it will sent the same frame again until the number of setting. conversely, the ACK obtain the respond(Downlink) back to LoRa tester, that mean the message is passed to a backend service, eventually the imformation will display on the Wio terminal screen. 
-
-This project bases using on the Arduino, you need to download the Arduino IDE and some library on your PC, if you are first time use the Wio terminal, here is the [**Wio terminal instruction**](https://wiki.seeedstudio.com/Wio-Terminal-Getting-Started/).
+The LoRaWAN Gateway Tester basically sends a frame on-demand to the gateway on a regular basis, then transfers to the server (Uplink). It then waits for an ACK status. If the LoRa tester does not receive a response, it will continue to send the same frame until the preset number has been reached. The ACK, on the other hand, returns the response(Downlink) to the LoRa tester, implying that the message is forwarded to a backend service, from whence the information is eventually shown on the Wio terminal screen.
+This project is based on the Arduino platform which means we’ll be using the Arduino IDE and various Arduino libraries. If this is your first time using the Wio terminal, here is a guide to quickly [**Get Started with Wio Terminal**](https://wiki.seeedstudio.com/Wio-Terminal-Getting-Started/).
 
 requite library:
-- [**Seeed_Arduino_LCD**](https://github.com/Seeed-Studio/Seeed_Arduino_LCD)
 - [**Seeed_Arduino_SFUD**](https://github.com/Seeed-Studio/Seeed_Arduino_SFUD)
 - [**TinyGPS**](https://github.com/mikalhart/TinyGPSPlus)
 - [**LovyanGFX**](https://github.com/lovyan03/LovyanGFX)
