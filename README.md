@@ -1,4 +1,4 @@
-# WioTerminal LoRaWAN Gateway Tester
+# WioTerminal LoRaWAN Gateway Tester for PlatformIO
 
 ## Introduction
 
